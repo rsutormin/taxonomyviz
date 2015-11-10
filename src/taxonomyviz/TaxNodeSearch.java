@@ -3,6 +3,7 @@ package taxonomyviz;
 import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.regex.Pattern;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -53,6 +54,9 @@ public class TaxNodeSearch {
 			}
 		}, taxId);
 	}
+	
+	//public static Map<String, Object> searchSubtree(List<Object> trackItems) {
+	//}
 
 	public static void main(String[] args) throws Exception {
 		TaxTreeLoader.loadTaxTree();
