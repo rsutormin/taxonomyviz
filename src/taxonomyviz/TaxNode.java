@@ -2,6 +2,7 @@ package taxonomyviz;
 
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
@@ -15,6 +16,14 @@ public class TaxNode {
     public int taxid;
     public String title;
     public int hidden = 0;
+    @JsonIgnore
+    public int layer = 0;
+    @JsonIgnore
+    public int lpos = 0;
+    @JsonIgnore
+    public int ind = 0;
+    @JsonIgnore
+    public int maxind = 0;
     public List<TaxNode> children;
 
     public TaxNode() {}

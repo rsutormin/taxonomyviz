@@ -13,6 +13,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeMap;
 import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
@@ -113,6 +114,7 @@ public class TaxTreeLoader {
 			removeHidden(null, root, hidden);
 			System.out.println("Remaining nodes: " + countNodes(root));
 		}
+		prepareNodeIndeces(root, 0, new TreeMap<Integer, Integer>(), -1);
 		new ObjectMapper().writeValue(taxFile, root);
 		MysqlConn.get().dropTableIfExists(MysqlDbManager.TBL_TAX_INDEX);
 		long time = System.currentTimeMillis();
@@ -173,11 +175,33 @@ public class TaxTreeLoader {
 		}
 		return ret;
 	}
+	
+	private static int prepareNodeIndeces(TaxNode node, int layer, 
+			Map<Integer, Integer> layerMaxId, int prevIndex) {
+		prevIndex++;
+		node.ind = prevIndex;
+		node.layer = layer;
+		Integer lpos = layerMaxId.get(layer);
+		if (lpos == null) {
+			lpos = 0;
+		} else {
+			lpos += 1;
+		}
+		node.lpos = lpos;
+		layerMaxId.put(layer, lpos);
+		if (node.children != null) {
+			for (TaxNode ch : node.children)
+				prevIndex = prepareNodeIndeces(ch, layer + 1, layerMaxId, prevIndex);
+		}
+		node.maxind = prevIndex;
+		return prevIndex;
+	}
 
 	private static int insertTaxIndex(int parId, String path, TaxNode node, MysqlConn.Batch target) throws Exception {
 		path += "/" + node.taxid;
 		int size = node.children == null ? 0 : node.children.size();
-		target.addNextRow(new Object[] {node.taxid, parId, node.title, node.hidden, path, size});
+		target.addNextRow(new Object[] {node.taxid, parId, node.title, node.hidden, 
+				node.layer, node.lpos, node.ind, node.maxind, path, size});
 		int ret = 1;
 		if (node.children != null)
 			for (TaxNode ch : node.children)

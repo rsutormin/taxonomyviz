@@ -18,11 +18,18 @@ public class MysqlDbManager {
                     "  parid integer, " +
                     "  title varchar(255), " +
                     "  hidden tinyint, " +
+                    "  layer integer, " +
+                    "  lpos integer, " +
+                    "  ind integer, " +
+                    "  maxind integer, " +
                     "  path varchar(255), " +
                     "  size integer, " +
-                    "  index (parid) " +
+                    "  index (parid), " +
+                    "  index (layer, lpos), " +
+                    "  index (ind) " +
                     ")");
         }
-		return conn.execBatch("insert into " + TBL_TAX_INDEX + " (taxid, parid, title, hidden, path, size) values (?,?,?,?,?,?)");
+		return conn.execBatch("insert into " + TBL_TAX_INDEX + " (taxid, parid, title, hidden, "
+				+ "layer, lpos, ind, maxind, path, size) values (?,?,?,?,?,?,?,?,?,?)");
 	}
 }
